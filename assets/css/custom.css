@@ -24,9 +24,46 @@ body {
 .triplog_title {
     margin-bottom: 10%;
     font-size: 6vw;
+}
+
+.no_select:hover {
+    cursor: default;
+}
+
+.no_select {
     user-select: none;
 }
 
-.triplog_title:hover {
-    cursor: default;
+.log_card {
+    width : 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.send_btn{
+    border-radius: 0 15px 15px 0 !important;
+    background-color: rgba(0,0,0,0.3) !important;
+    border:0 !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.attach_btn{
+    border-radius: 15px 0 0 15px !important;
+    background-color: rgba(0,0,0,0.3) !important;
+    border:0 !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.type_msg{
+    background-color: rgba(0,0,0,0.3) !important;
+    border:0 !important;
+    color:white !important;
+    height: 60px !important;
+    overflow-y:visible;
+}
+.type_msg:focus{
+    box-shadow:none !important;
+    outline:0px !important;
 }
