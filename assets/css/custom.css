@@ -1,0 +1,32 @@
+body {
+    background-color: #72bd6a;
+}
+
+.dGreen {
+    color: #32662d;
+}
+
+.mGreen {
+    background-color: #72bd6a;
+}
+
+.lGreen {
+    background-color: #dbf2d8;
+}
+
+.title_container {
+    width: 50%;
+    margin-top: 10%;
+    padding-top: 5%;
+    padding-bottom: 2%;
+}
+
+.triplog_title {
+    margin-bottom: 10%;
+    font-size: 6vw;
+    user-select: none;
+}
+
+.triplog_title:hover {
+    cursor: default;
+}
