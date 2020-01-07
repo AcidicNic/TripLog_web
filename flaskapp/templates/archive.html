@@ -1,0 +1,37 @@
+<!-- archive.html | archive of previous logs -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Collapsable Hamburger Navbar -->
+<div class="pos-f-t mb-4 sticky-top">
+    <nav class="navbar navbar-dark bg-dark">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Heading -->
+        <h1 class='archive_title no_select text-white m-0'>Archive</h1>
+        <!-- Search Bar -->
+        <div class="form-group m-0">
+            <input type="search" placeholder="Search Logs" aria-describedby="button-addon" class="form-control">
+        </div>
+    </nav>
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-2">
+            <button type="button" class="btn btn-primary m-2" onclick="location.href='/';">Back</button>
+        </div>
+    </div>
+</div>
+
+{% for log in logs %}
+<div class="card log_card mb-2">
+    <div class="card-body">
+        <h5 class="card-title">{{ log.title }}</h5>
+        <p class="card-text">{{ log.desc }}</p>
+        <a href="/logs/{{log._id}}" class="btn btn-primary float-right">View Log</a>
+        <p class="card-text">{{ log.start_date }}</p>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

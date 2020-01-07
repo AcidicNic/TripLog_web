@@ -1,0 +1,46 @@
+<!-- begin_form.html | landing page -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="title_container card text-center mx-auto p-2">
+    <form method="POST" action="/create">
+
+        <div class="form_div">
+            <label class='form_label' for='form_title'>Log Title</label><br>
+            <input class='form_input' id='form_title' type='text' name='title'/>
+        </div>
+
+        <div class="form_div">
+            <label class='form_label' for='form_desc'>Description</label><br>
+            <input class='form_input' id='form_desc' type='text' name='desc'/>
+        </div>
+
+        <div class="form_div" id='dose_div'>
+            <label class='form_label' for='form_drug'>Drug</label><br>
+            <input class='form_input' id='form_drug' type='text' name='drug'/><br>
+
+            <label class='form_label' for='form_n'>Dose</label><br>
+            <input class='form_input' id='form_n' type="text" name='n'/><br>
+
+<!--            <label class='form_label' for='form_unit'>Unit</label><br>-->
+<!--            <select name="unit" class='form_input' id='form_unit'-->
+<!--                    onchange="if(this.options[this.selectedIndex].value==='customOption'){-->
+<!--                    toggleField(this,this.nextSibling);-->
+<!--                    this.selectedIndex='0';}">-->
+<!--                <option vlaue="g">g</option>-->
+<!--                <option value="mg">mg</option>-->
+<!--                <option value="ug">ug</option>-->
+<!--                <option value="customOption">Add your own!</option>-->
+<!--            </select><input name="unit" class='form_input' style="display:none;" disabled="disabled"-->
+<!--            onblur="if(this.value===''){toggleField(this,this.previousSibling);}"/>-->
+        </div>
+
+<!--        <div class="form_div">-->
+<!--            <label class='form_label' for='form_date_time'>Date & Time</label><br>-->
+<!--            <input class='form_input' id='form_date_time' type='datetime-local' name='date_time'/>-->
+<!--        </div>-->
+
+        <button type='submit' class='btn btn-success'>Begin!</button>
+    </form>
+</div>
+{% endblock %}

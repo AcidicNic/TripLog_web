@@ -1,0 +1,77 @@
+<!-- current_log.html | landing page -->
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Collapsable Hamburger Navbar -->
+<div class="pos-f-t sticky-top mb-4">
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- Hamburger Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Heading -->
+        <h1 class='archive_title no_select text-white m-0'>{{ log.title }}</h1>
+        <p></p>
+    </nav>
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-2">
+            <button type="button" class="btn btn-primary m-2" onclick="location.href='/';">Back</button>
+            <div class="text-white">
+                <span>{{ log.desc }}</span><br>
+                <span>Log started on {{ log.start_date }} at {{ log.start_time }}</span><br>
+                <span>{{ log.dose.drug }}: {{ log.dose.n }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Notes -->
+<div id="note_container">
+    <div class="row note">
+        <div class="col-xs-1 align-middle text-center pl-1">
+            <span class='timestamp'>{{ log.start_time }}</span>
+        </div>
+        <div class='col-xl-11'>
+            {{ log.dose.n }} of {{ log.dose.drug }}
+        </div>
+    </div>
+    {% for note in log.notes %}
+    <div class="row note">
+        <div class="col-xs-1 align-middle text-center pl-1">
+            <span class='timestamp'>{{ note.timestamp }}</span>
+        </div>
+        {% if note.type == 'str'%}
+            <div class='col-xl-11' style="white-space: pre-wrap;">{{ note.content }}</div>
+        {% elif note.type == 'img'%}
+            <div class='col-xl-11' ><img class="img" src="{{ url_for('static', filename='photos') }}/{{ note.content }}"/></div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Text Input -->
+<div class="input-group fixed-bottom text_input_div">
+    <div class="input-group-append" onclick="
+           document.getElementById('file_input').click();
+    ">
+        <input form='add_note' name='file' type='file' id="file_input" style="display: none;" onchange="
+                if(document.getElementById('file_input').files.length > 0 ){
+                    document.getElementById('paperclip').style.backgroundColor = 'rgba(0, 0, 255, 0.5)';
+               }" />
+        <span class="input-group-text attach_btn" id="paperclip"><i class="fa fa-paperclip"></i></span>
+    </div>
+    <textarea name="note" form='add_note' class="form-control type_note" onkeyup="textAreaAdjust(this)"></textarea>
+    <div class="input-group-append">
+        <span class="input-group-text send_btn" id='add_note_btn' onClick='document.add_note.submit();'><i class="fa fa-location-arrow"></i></span>
+    </div>
+</div>
+
+<form method='POST' name='add_note' id='add_note' action='/logs/{{log._id}}' enctype='multipart/form-data'>
+        <input type='hidden' name='_method' value='PUT'/>
+</form>
+<!-- scroll to the bottom on pageload -->
+<script>
+    window.scrollTo(0,document.body.scrollHeight);
+</script>
+{% endblock %}
