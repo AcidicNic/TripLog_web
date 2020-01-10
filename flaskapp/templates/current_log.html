@@ -16,15 +16,33 @@
     </nav>
     <div class="collapse" id="navbarToggleExternalContent">
         <div class="bg-dark p-2">
-            <button type="button" class="btn btn-primary m-2" onclick="location.href='/';">Back</button>
-            <div class="text-white">
-                <span>{{ log.desc }}</span><br>
-                <span>Log started on {{ log.start_date }} at {{ log.start_time }}</span><br>
-                <span>{{ log.dose.drug }}: {{ log.dose.n }}</span>
+            <div class="text-white text-center">
+                <button type="button" class="btn btn-dark m-2">{{ log.desc }}</button><br>
+                <span>Doses:</span><br>
+                {% for dose in log.doses %}
+                <!-- TODO: IF option for space between dose and unit -->
+                <button type="button" class="btn btn-dark m-2" data-toggle="modal" data-target="#drugInfoModal{{dose.drug}}">{{ dose.dose }}{{ dose.unit }} of {{ dose.drug }}</button>
+                {% endfor %}
+
+                <br>
+                <button type="button" class="btn btn-dark m-2">Log started on {{ log.start_date }} at {{ log.start_time }}</button>
+            </div>
+            <div class="d-flex justify-content-between btn-row text-white">
+                <button type="button" class="btn btn-primary m-2" onclick="location.href='/';">Home</button>
+                <button type="button" class="btn btn-danger m-2" data-toggle="modal" data-target="#helpModal">Need Help?</button>
+                <button type="button" class="btn btn-success m-2" onclick="">Add Dose</button>
+                <button type="button" class="btn btn-secondary m-2" onclick="location.href='/logs/{{ log._id }}/edit';">Edit</button>
+                <button type="button" class="btn btn-warning m-2" form='change_status' onClick='document.change_status.submit();'>Trip Completed</button>
             </div>
         </div>
     </div>
 </div>
+<!-- Modals -->
+{% include 'modals/help.html' %}
+
+{% for dose in log.doses %}
+    {% include 'modals/drug_info.html' %}
+{% endfor %}
 
 <!-- Notes -->
 <div id="note_container">
@@ -32,21 +50,42 @@
         <div class="col-xs-1 align-middle text-center pl-1">
             <span class='timestamp'>{{ log.start_time }}</span>
         </div>
-        <div class='col-xl-11'>
-            {{ log.dose.n }} of {{ log.dose.drug }}
+        <div class='col-xl-11'>Welcome {{ log.username }}! So far you've had:<br>
+            {% for dose in log.doses %}
+                {{ dose.dose }}{{ dose.unit }} of {{ dose.drug }}<br>
+            {% endfor %}
         </div>
     </div>
     {% for note in log.notes %}
-    <div class="row note">
-        <div class="col-xs-1 align-middle text-center pl-1">
-            <span class='timestamp'>{{ note.timestamp }}</span>
-        </div>
         {% if note.type == 'str'%}
-            <div class='col-xl-11' style="white-space: pre-wrap;">{{ note.content }}</div>
+            <div class="row note">
+                <div class="col-xs-1 align-middle text-center pl-1">
+                    <span class='timestamp'>{{ note.timestamp }}</span>
+                </div>
+                <div class='col-xl-11' style="white-space: pre-wrap;">{{ note.content }}</div>
+            </div>
         {% elif note.type == 'img'%}
-            <div class='col-xl-11' ><img class="img" src="{{ url_for('static', filename='photos') }}/{{ note.content }}"/></div>
+            <div class="row note">
+                <div class="col-xs-1 align-middle text-center pl-1">
+                    <span class='timestamp'>{{ note.timestamp }}</span>
+                </div>
+                <div class='col-xl-11' ><img class="img" src="{{ url_for('static', filename='photos') }}/{{ note.content }}"/></div>
+            </div>
+        {% elif note.type == 'answer'%}
+            <div class="row answer">
+                <div class="col-xs-1 align-middle text-center pl-1">
+                    <span class='timestamp'>Ask The Caterpillar says...</span>
+                </div>
+                <div class='col-xl-11' style="white-space: pre-wrap;">{{ note.content }}</div>
+            </div>
+        {% elif note.type == 'hidden'%}
+            <div class="row note" style="display: none;">
+                <div class="col-xs-1 align-middle text-center pl-1">
+                    <span class='timestamp'>{{ note.timestamp }}</span>
+                </div>
+                <div class='col-xl-11' style="white-space: pre-wrap;">{{ note.content }}</div>
+            </div>
         {% endif %}
-    </div>
     {% endfor %}
 </div>
 
@@ -61,7 +100,7 @@
                }" />
         <span class="input-group-text attach_btn" id="paperclip"><i class="fa fa-paperclip"></i></span>
     </div>
-    <textarea name="note" form='add_note' class="form-control type_note" onkeyup="textAreaAdjust(this)"></textarea>
+    <textarea name="note" id="note_input" form='add_note' class="form-control type_note" onkeyup="textAreaAdjust(this)"></textarea>
     <div class="input-group-append">
         <span class="input-group-text send_btn" id='add_note_btn' onClick='document.add_note.submit();'><i class="fa fa-location-arrow"></i></span>
     </div>
@@ -70,8 +109,14 @@
 <form method='POST' name='add_note' id='add_note' action='/logs/{{log._id}}' enctype='multipart/form-data'>
         <input type='hidden' name='_method' value='PUT'/>
 </form>
+
+<form method='POST' name='change_status' id='change_status' action='/logs/{{log._id}}'>
+</form>
 <!-- scroll to the bottom on pageload -->
 <script>
     window.scrollTo(0,document.body.scrollHeight);
+    $('#myModal').on('shown.bs.modal', function () {
+        $('#myInput').trigger('focus')
+    })
 </script>
 {% endblock %}

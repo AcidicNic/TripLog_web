@@ -4,21 +4,23 @@
 {% block content %}
 
 <div class="title_container card text-center mx-auto p-2">
-    <form id="log_form" method="POST" action="/create">
+    <form method="POST" action="/create">
 
         <div class="form_div mb-3">
             <label class='form_label' for='form_title'>Log Title</label><br>
-            <input class='form-control form_input' id='form_title' type='text' name='title' placeholder='Experience Title'/>
+            <input class='form-control form_input' id='form_title' type='text' name='title' placeholder='Experience Title' value="{{ log.title }}"/>
         </div>
 
         <div class="form_div mb-3">
             <label class='form_label' for='form_desc'>Description</label><br>
-            <input class='form-control form_input' id='form_desc' type='text' name='desc' placeholder='Any extra info?'/>
+            <input class='form-control form_input' id='form_desc' type='text' name='desc' placeholder='Any extra info?' value="{{ log.desc }}"/>
         </div>
         <br>
 
         <div class="form_div mb-2 d-block pretty p-switch p-fill d-flex flex-row justify-content-center">
+            {% if log.doses %}
             <input type="checkbox" id="currently_tripping_check" onclick='showDoses()' checked/>
+            {% endif %}
             <div class="state p-success mb-2">
                 <label>Click here if you're currently dosed!</label>
             </div>
@@ -26,70 +28,52 @@
 
 
 
-    <div id="dose_wrapper">
+        <div id="dose_wrapper">
             <div class="m-2" style="display: block;">
                 <i class="far fa-minus-square rm_dose" onclick="rmDose()"></i>
                 <span class="dose_label m-2">Dose</span>
                 <i class="far fa-plus-square add_dose" onclick="addDose()"></i>
             </div>
-            <div class="input-group form_div mb-2" id="dose1">
+            {% for dose in log.doses %}
+                <div class="input-group form_div mb-2 dose_div">
+                    <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug" value="{{dose.drug}}"/>
+                    <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose" value="{{dose.dose}}"/>
+                    <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit" value="{{dose.unit}}"/>
+                </div>
+            {% endfor %}
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose2" style="display: none;">
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose3" style="display: none;">
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose4" style="display: none;">
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose5" style="display: none;">
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
-                <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
-                <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
-                <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
-            </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
-                <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
-                <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
-                <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
-            </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
-                <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
-                <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
-                <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
-            </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
-                <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
-                <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
-                <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
-            </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
-                <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
-                <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
-                <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
-            </div>
-            <div class="input-group form_div mb-2 dose_div" id="dose6" style="display: none;">
+            <div class="input-group form_div mb-2 dose_div" style="display: none;">
                 <input type="text" class='form-control drug_dropdown' name='drug' autocomplete=off placeholder="Drug"/>
                 <input type="text" class='form-control unit_dropdown' name='dose' autocomplete=off placeholder="Dose"/>
                 <input type="text" class='form-control dose_dropdown' name='unit' autocomplete=off placeholder="Unit"/>
             </div>
         </div>
 
-        <button type='submit' class='btn btn-success mt-2'>Begin!</button>
+        <button type='submit' class='btn btn-success mt-2'>Update!</button>
     </form>
 </div>
 <script>

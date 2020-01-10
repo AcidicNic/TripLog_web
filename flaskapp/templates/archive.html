@@ -29,9 +29,13 @@
         <h5 class="card-title">{{ log.title }}</h5>
         <p class="card-text">{{ log.desc }}</p>
         <a href="/logs/{{log._id}}" class="btn btn-primary float-right">View Log</a>
+        <button type='submit' form='delete_form' class='btn btn-danger float-right mr-2'>Delete</button>
         <p class="card-text">{{ log.start_date }}</p>
     </div>
 </div>
+<form method='POST' id='delete_form' action='/logs/{{log._id}}/delete'>
+    <input type='hidden' name='_method' value='DELETE'>
+</form>
 {% endfor %}
 
 {% endblock %}

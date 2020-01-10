@@ -1,0 +1,53 @@
+<!-- Info Modal -->
+<div class="modal fade" id="drugInfoModal{{dose.drug}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ dose.drug }} </h5>
+                {% if dose.pretty_name %}
+                    <h5 class="modal-title text-muted"> ({{dose.pretty_name}})</h5>
+                {% endif %}
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {% if dose.info %}
+                    <h5>Summary:</h5>
+                    <p>{{ dose.info.summary }}</p>
+
+                    <h5>Aliases:</h5>
+                    <p>{{ dose.info.aliases|join(', ') }}</p>
+
+                    <h5>Effects:</h5>
+                    <ul>
+                        {% for effect in dose.effects %}<li>{{ effect }}</li>{% endfor %}
+                    </ul>
+
+                    <h5>Dose:</h5>
+                    <p>{{ dose.info.dose }}</p>
+
+                    <h5>Duration:</h5>
+                    <p>{{ dose.info.duration }}</p>
+                    {% if dose.info.onset %}
+                    <p><strong> * Onset:</strong> {{ dose.info.onset }}</p>
+                    {% endif %}
+                    {% if dose.info["after-effects"] %}
+                        <p><strong> * After Effects:</strong> {{ dose.info["after-effects"] }}</p>
+                    {% endif %}
+                    {% if dose.info["half-life"] %}
+                    <p><strong> * Half Life:</strong> {{ dose.info["half-life"] }}</p>
+                    {% endif %}
+
+                    <h5>Avoid:</h5>
+                    <p>{{ dose.info.avoid }}</p>
+                {% else %}
+                    <p>Sorry, I can't find any information for {{ dose.drug }}!</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

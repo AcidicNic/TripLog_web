@@ -7,20 +7,17 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
+    <!-- Pretty checkboxes src: https://github.com/lokesh-coder/pretty-checkbox -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/28aab0c300.js" crossorigin="anonymous"></script>
 
-    <!-- My CSS and JS -->
+    <!-- Typeahead.js CSS for Bootstrap 4! src: https://github.com/bassjobsen/typeahead.js-bootstrap4-css/ -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/typeaheadjs.css') }}">
+
+    <!-- My CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
-    <script>
-        function textAreaAdjust(text) {
-            var notes = document.getElementById('note_container');
-            text.style.height = 'auto';
-            notes.style.marginBottom = text.scrollHeight + 20 + "px";
-            text.style.height = text.scrollHeight+'px';
-            window.scrollTo(0,document.body.scrollHeight);
-        }
-    </script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
@@ -38,5 +35,11 @@
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <!-- Twitter's Typeahead + Bloodhound bundle -->
+    <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- my JS -->
+    <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
 </body>
 </html>

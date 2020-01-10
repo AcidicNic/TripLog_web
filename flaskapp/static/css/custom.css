@@ -4,6 +4,15 @@ body {
     background: linear-gradient(90deg, rgba(96,255,204,1) 0%, rgba(0,134,59,1) 100%);
 }
 
+.archive_title {
+    padding-right: 56px;
+}
+
+.btn-row {
+    width: 100%;
+    margin: 0 auto;
+}
+
 .img {
     height: 30vw;
     text-align: center;
@@ -65,6 +74,17 @@ body {
     margin-top: 1%;
 }
 
+.answer {
+    background-color: rgba(255, 224, 253,.85);
+    border: none;
+    border-radius: 10px;
+    padding: 1%;
+    width : 90%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 1%;
+}
+
 #note_container {
     margin-bottom: 80px;
 }
@@ -91,13 +111,38 @@ body {
 
 .type_note{
     background-color: rgba(0,0,0,0.3) !important;
-    border:0 !important;
-    color:white !important;
+    border: 0 !important;
+    color: white !important;
     height: 60px;
     resize: none;
     overflow: hidden;
 }
 .type_msg:focus{
-    box-shadow:none !important;
-    outline:0px !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+.form_input {
+    width: 100%;
+}
+
+.form_div {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.rm_dose:hover, .add_dose:hover {
+    cursor: pointer;
+}
+.rm_dose, .add_dose, .dose_label {
+    color: #000;
+    font-size: 18px;
+}
+
+.dose_label:hover {
+    cursor: default;
+}
+
+.drug_dropdown {
+    outline-width: 0;
 }
