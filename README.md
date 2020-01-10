@@ -21,6 +21,8 @@ This isn't fully usable, but many of the important features are ready. There is 
 
 * If you're not feeling too hot and you need someone to talk to, open up the drawer on the top left and click the red "Help" button. This will link you to the tripsit.me assistance RCS chat, it's full of nice people that will try their best to help you out.
 
+* After adding a note, you can click on it to add timestamped edits!
+
 ### What features are coming next?
 Head over to [the projects tab](https://github.com/snekek/TripLog_web/projects/1) in this repo to see my progress and upcoming features.
 
