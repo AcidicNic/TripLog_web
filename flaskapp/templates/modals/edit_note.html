@@ -1,0 +1,27 @@
+<!-- Edit Note Modal -->
+<div class="modal fade" id="editNoteModal{{note.id}}" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add edit to note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="dose_wrapper">
+                    <form method="POST" id="edit_note_form" action="/logs/{{ log._id }}">
+                        <div class="form_div mb-3">
+                            <input class='form-control form_input' type='text' name='addon' placeholder='Add onto to your note'/>
+                        </div>
+                        <input type='hidden' name='note_id' value='{{ note.id }}'/>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Close</button>
+                <button type='submit' name="update_btn" value="edit_note" form="edit_note_form" class='btn btn-success mt-2 float-right'>Update</button>
+            </div>
+        </div>
+    </div>
+</div>

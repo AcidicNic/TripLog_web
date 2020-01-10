@@ -4,7 +4,7 @@
 {% block content %}
 
 <div class="title_container card text-center mx-auto p-2">
-    <form method="POST" action="/logs/{{ log._id }}/update">
+    <form method="POST" id="log_form" name="log_form" action="/logs/{{ log._id }}/update">
 
         <div class="form_div mb-3">
             <label class='form_label' for='form_title'>Log Title</label><br>

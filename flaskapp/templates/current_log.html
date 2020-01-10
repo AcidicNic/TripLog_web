@@ -50,6 +50,11 @@
     {% include 'modals/drug_info.html' %}
 {% endfor %}
 
+{% for note in log.notes %}
+    {% include 'modals/edit_note.html' %}
+{% endfor %}
+
+
 <!-- Notes -->
 <div id="note_container">
     <div class="row note">
@@ -64,6 +69,22 @@
     </div>
     {% for note in log.notes %}
         {% if note.type == 'str'%}
+            <a data-toggle="modal" data-target="#editNoteModal{{note.id}}">
+                <div class="row note">
+                    <div class="col-xs-1 align-middle text-center pl-1">
+                        <span class='timestamp'>{{ note.timestamp }}</span>
+                    </div>
+<!--                    <div class='col-xl-11' style="white-space: pre-wrap;">-->
+                    <div class='col-xl-11'>
+                        {{ note.content }}<br>
+                        {% for edit in note.edits %}
+                            <span class='timestamp'>{{ edit.timestamp }}: </span>
+                            <div style="white-space: pre-wrap;"> {{ edit.content }}</div><br>
+                        {% endfor %}
+                    </div>
+                </div>
+            </a>
+        {% elif note.type == 'question'%}
             <div class="row note">
                 <div class="col-xs-1 align-middle text-center pl-1">
                     <span class='timestamp'>{{ note.timestamp }}</span>
@@ -119,11 +140,9 @@
 
 <form method='POST' name='change_status' id='change_status' action='/logs/{{log._id}}'>
 </form>
-<!-- scroll to the bottom on pageload -->
+
 <script>
-    window.scrollTo(0,document.body.scrollHeight);
-    $('#myModal').on('shown.bs.modal', function () {
-        $('#myInput').trigger('focus')
-    })
+// scroll to the bottom on pageload
+window.scrollTo(0,document.body.scrollHeight);
 </script>
 {% endblock %}

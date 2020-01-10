@@ -106,9 +106,111 @@ def new_log_submit():
     for i in range(len(drugs)):
         if drugs[i] != '':
             log['doses'].append(get_drug_info(drugs[i], doses[i], units[i]))
+    log['notes'].append({
+        'id': 0,
+        'type': 'hidden',
+        'content': 'Log Started',
+        'timestamp': now.strftime('%-I:%M:%S %p'),
+        'edits': []
+    })
     # if request.form.get('currently_tripping'):
     #     log['status'] = 'CURRENTLY_TRIPPING'
     log_id = logs.insert_one(log).inserted_id
+    return redirect(url_for('log', log_id=log_id))
+
+
+@app.route('/logs/<log_id>', methods=['POST'])
+def update(log_id):
+    ''' add updated info to the database '''
+    # Add Dose
+    if request.form["update_btn"] == "add_dose":
+        return add_dose(log_id)
+    # Change Status
+    elif request.form["update_btn"] == "status":
+        return change_status(log_id)
+    # Edit Title/Description
+    elif request.form["update_btn"] == "edit_desc":
+        return update_desc(log_id)
+    # Edit Note
+    elif request.form["update_btn"] == "edit_note":
+        return edit_note(log_id)
+    # Add Note
+    else:
+        return add_note(log_id)
+
+
+def edit_note(log_id):
+    now = datetime.now()
+    note_index = request.form.get('note_id')
+    addon = request.form.get('addon')
+    log = logs.find_one({'_id': ObjectId(log_id)})
+    if len(log['notes'][int(note_index)]['edits']) > 0:
+        log['notes'][int(note_index)]['edits'].append({
+            'id': log['notes'][int(note_index)]['edits'][-1]['id'] + 1,
+            'type': 'str',
+            'content': addon,
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+        })
+    else:
+        log['notes'][int(note_index)]['edits'].append({
+            'id': 0,
+            'type': 'str',
+            'content': addon,
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+        })
+    print(log['notes'][int(note_index)])
+    logs.update_one(
+        {'_id': ObjectId(log_id)},
+        {'$set': log}
+    )
+    return redirect(url_for('log', log_id=log_id))
+
+
+def add_note(log_id):
+    now = datetime.now()
+    note = request.form.get('note')
+    log = logs.find_one({'_id': ObjectId(log_id)})
+    if 'file' in request.files:
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            log['notes'].append({
+                'id': log['notes'][-1]['id']+1,
+                'type': 'img',
+                'content': filename,
+                'timestamp': now.strftime('%-I:%M:%S %p'),
+                'edits': []
+            })
+    if not note == '':
+        if note[:4] == '??? ':
+            log['notes'].append({
+                'id': log['notes'][-1]['id']+1,
+                'type': 'question',
+                'content': note,
+                'timestamp': now.strftime('%-I:%M:%S %p'),
+                'edits': []
+            })
+            log['notes'].append({
+                'id': log['notes'][-1]['id']+1,
+                'type': 'answer',
+                'content': AskTheCaterpillar.ask_the_caterpillar(note[4:]),
+                'timestamp': now.strftime('%-I:%M:%S %p'),
+                'edits': []
+            })
+        else:
+            log['notes'].append({
+                'id': log['notes'][-1]['id']+1,
+                'type': 'str',
+                'content': note,
+                'timestamp': now.strftime('%-I:%M:%S %p'),
+                'edits': []
+            })
+    logs.update_one(
+        {'_id': ObjectId(log_id)},
+        {'$set': log}
+    )
     return redirect(url_for('log', log_id=log_id))
 
 
@@ -125,15 +227,19 @@ def update_desc(log_id):
         return redirect(url_for('log', log_id=log_id))
     if title != log['title']:
         log['notes'].append({
+            'id': log['notes'][-1]['id']+1,
             'type': 'hidden',
             'content': f"The title has been changed from \"{log['title']}\" to \"{title}\"",
-            'timestamp': now.strftime('%-I:%M:%S %p')
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+            'edits': []
         })
     if desc != log['desc']:
         log['notes'].append({
+            'id': log['notes'][-1]['id']+1,
             'type': 'hidden',
             'content': f"The description has been changed from \"{log['desc']}\" to \"{desc}\"",
-            'timestamp': now.strftime('%-I:%M:%S %p')
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+            'edits': []
         })
     log['title'] = title
     log['desc'] = desc
@@ -142,52 +248,6 @@ def update_desc(log_id):
         {'$set': log}
     )
     return redirect(url_for('log', log_id=log_id))
-
-@app.route('/logs/<log_id>', methods=['POST'])
-def update(log_id):
-    ''' add updated info to the database '''
-    # Add Dose
-    if request.method == "POST" and request.form["update_btn"] == "add_dose":
-        return add_dose(log_id)
-    # Change Status
-    elif request.method == "POST" and request.form["update_btn"] == "status":
-        return change_status(log_id)
-    # Edit Title/Description
-    elif request.method == "POST" and request.form["update_btn"] == "edit_desc":
-        return update_desc(log_id)
-    # Add Note
-    else:
-        now = datetime.now()
-        note = request.form.get('note')
-        log = logs.find_one({'_id': ObjectId(log_id)})
-        if 'file' in request.files:
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                print(filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                log['notes'].append({
-                    'type': 'img',
-                    'content': filename,
-                    'timestamp': now.strftime('%-I:%M:%S %p')
-                })
-        if not note == '':
-            print(note[:3])
-            log['notes'].append({
-                'type': 'str',
-                'content': note,
-                'timestamp': now.strftime('%-I:%M:%S %p')
-            })
-            if note[:4] == '??? ':log['notes'].append({
-                'type': 'answer',
-                'content': AskTheCaterpillar.ask_the_caterpillar(note[4:]),
-                'timestamp': now.strftime('%-I:%M:%S %p')
-            })
-        logs.update_one(
-            {'_id': ObjectId(log_id)},
-            {'$set': log}
-        )
-        return redirect(url_for('log', log_id=log_id))
 
 
 def change_status(log_id):
@@ -198,16 +258,20 @@ def change_status(log_id):
     if log['status'] != 'COMPLETED':
         log['status'] = 'COMPLETED'
         log['notes'].append({
+            'id': log['notes'][-1]['id']+1,
             'type': 'str',
             'content': 'This log was marked completed.',
-            'timestamp': now.strftime('%-I:%M:%S %p')
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+            'edits': []
         })
     else:
         log['status'] = 'CURRENTLY_TRIPPING'
         log['notes'].append({
+            'id': log['notes'][-1]['id']+1,
             'type': 'str',
             'content': 'This log was reopened.',
-            'timestamp': now.strftime('%-I:%M:%S %p')
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+            'edits': []
         })
     logs.update_one(
         {'_id': ObjectId(log_id)},
@@ -226,9 +290,11 @@ def add_dose(log_id):
     if drug != '':
         log['doses'].append(get_drug_info(drug, dose, unit))
         log['notes'].append({
+            'id': log['notes'][-1]['id']+1,
             'type': 'str',
             'content': f"Dose Added. {dose}{unit} of {drug}",
-            'timestamp': now.strftime('%-I:%M:%S %p')
+            'timestamp': now.strftime('%-I:%M:%S %p'),
+            'edits': []
         })
     logs.update_one(
         {'_id': ObjectId(log_id)},
@@ -275,7 +341,6 @@ def update_log(log_id):
     for i in range(len(drugs)):
         if drugs[i] != '':
             log['doses'].append(get_drug_info(drugs[i], doses[i], units[i]))
-
     logs.update_one(
         {'_id': ObjectId(log_id)},
         {'$set': log})
