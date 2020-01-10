@@ -1,4 +1,5 @@
 /flaskapp/.env
 /flaskapp/package-lock.json
 /flaskapp/__pycache__
+/flaskapp/.gitignore
 .idea
