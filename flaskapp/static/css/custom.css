@@ -146,3 +146,24 @@ body {
 .drug_dropdown {
     outline-width: 0;
 }
+
+.modal-body {
+    background: linear-gradient(90deg, rgba(96,255,204,1) 0%, rgba(0,134,59,1) 100%);
+}
+
+.modal-header, .modal-footer {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.modal-title {
+    text-align: center;
+}
+
+.edit_note_input {
+    border-radius: 15px 15px 15px 15px !important;
+}
+
+.x {
+    color: #fff
+}

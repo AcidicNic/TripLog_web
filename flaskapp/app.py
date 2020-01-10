@@ -6,7 +6,6 @@ import os
 import json
 import requests
 from werkzeug.utils import secure_filename
-from pysychonaut import AskTheCaterpillar
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -85,12 +84,15 @@ def new_log_submit():
     now = datetime.now()
     desc = request.form.get('desc')
     title = request.form.get('title')
+    username = request.form.get('username')
     if desc == '':
         desc = 'write a description!'
+    if username == '':
+        username = 'username'
     if title == '':
-        title = "testname's Experience"
+        title = f"{username}'s Experience"
     log = {
-        'username': 'testname',
+        'username': username,
         'start_time': now.strftime('%-I:%M:%S %p'),
         'start_date': now.strftime('%b. %d, %Y'),
         'title': title,
@@ -142,23 +144,16 @@ def update(log_id):
 def edit_note(log_id):
     now = datetime.now()
     note_index = request.form.get('note_id')
-    addon = request.form.get('addon')
+    addon = request.form['addon']
+    # addon = request.form.get('addon')
     log = logs.find_one({'_id': ObjectId(log_id)})
-    if len(log['notes'][int(note_index)]['edits']) > 0:
-        log['notes'][int(note_index)]['edits'].append({
-            'id': log['notes'][int(note_index)]['edits'][-1]['id'] + 1,
-            'type': 'str',
-            'content': addon,
-            'timestamp': now.strftime('%-I:%M:%S %p'),
-        })
-    else:
-        log['notes'][int(note_index)]['edits'].append({
-            'id': 0,
-            'type': 'str',
-            'content': addon,
-            'timestamp': now.strftime('%-I:%M:%S %p'),
-        })
-    print(log['notes'][int(note_index)])
+
+    log['notes'][int(note_index)]['edits'].append({
+        'id': len(log['notes'][int(note_index)]['edits']),
+        'type': 'str',
+        'content': addon,
+        'timestamp': now.strftime('%-I:%M:%S %p'),
+    })
     logs.update_one(
         {'_id': ObjectId(log_id)},
         {'$set': log}
@@ -174,7 +169,6 @@ def add_note(log_id):
         file = request.files['file']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            print(filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             log['notes'].append({
                 'id': log['notes'][-1]['id']+1,
@@ -195,7 +189,7 @@ def add_note(log_id):
             log['notes'].append({
                 'id': log['notes'][-1]['id']+1,
                 'type': 'answer',
-                'content': AskTheCaterpillar.ask_the_caterpillar(note[4:]),
+                'content': ask_the_caterpillar(note[4:]),
                 'timestamp': now.strftime('%-I:%M:%S %p'),
                 'edits': []
             })
@@ -353,6 +347,13 @@ def delete_log(log_id):
     logs.delete_one({'_id': ObjectId(log_id)})
     return redirect(url_for('archive'))
 
+
+def ask_the_caterpillar(query):
+    r = requests.post('https://www.askthecaterpillar.com/query', {"query": query})
+    if r.status_code == 200:
+        data = r.json()
+        return data["data"]["messages"][0]["content"]
+    return f"So sorry! Ask The Caterpillar is currently down, try again later. (Error {r.status_code}: {r.reason})"
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 666))

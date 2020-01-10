@@ -77,11 +77,18 @@
 <!--                    <div class='col-xl-11' style="white-space: pre-wrap;">-->
                     <div class='col-xl-11'>
                         {{ note.content }}<br>
-                        {% for edit in note.edits %}
-                            <span class='timestamp'>{{ edit.timestamp }}: </span>
-                            <div style="white-space: pre-wrap;"> {{ edit.content }}</div><br>
-                        {% endfor %}
                     </div>
+                    {% if note.edits %}
+                            <span class="ml-4 pl-4"><strong>Edits:</strong></span><br>
+                            {% for edit in note['edits'] %}
+                                <div class="row note">
+                                    <div class="col-xs-1 align-middle text-center pl-1">
+                                        <span class='timestamp'>{{ edit.timestamp }}</span>
+                                    </div>
+                                    <div class='col-xl-11' style="white-space: pre-wrap;">{{ edit.content }}</div>
+                                </div>
+                            {% endfor %}
+                    {% endif %}
                 </div>
             </a>
         {% elif note.type == 'question'%}

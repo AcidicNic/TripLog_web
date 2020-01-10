@@ -6,7 +6,6 @@ function textAreaAdjust(text) {
     window.scrollTo(0,document.body.scrollHeight);
 }
 
-// $('#note_input').keydown(function() {
 $("#note_input").keydown(function(e){
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();

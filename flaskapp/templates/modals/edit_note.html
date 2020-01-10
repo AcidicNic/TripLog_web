@@ -3,24 +3,44 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add edit to note</h5>
+                <h5 class="modal-title">Add an edit to your note</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                <span class="x" aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div id="dose_wrapper">
-                    <form method="POST" id="edit_note_form" action="/logs/{{ log._id }}">
-                        <div class="form_div mb-3">
-                            <input class='form-control form_input' type='text' name='addon' placeholder='Add onto to your note'/>
-                        </div>
-                        <input type='hidden' name='note_id' value='{{ note.id }}'/>
-                    </form>
+                <div class="row note">
+                    <div class="col-xs-1 align-middle text-center pl-1">
+                        <span class='timestamp'>{{ note.timestamp }}</span>
+                    </div>
+<!--                    <div class='col-xl-11' style="white-space: pre-wrap;">-->
+                    <div class='col-xl-11'>
+                        {{ note.content }}<br>
+                    </div>
+                    {% if note.edits %}
+                            <span class="ml-4 pl-4"><strong>Edits:</strong></span><br>
+                            {% for edit in note['edits'] %}
+                                <div class="row note">
+                                    <div class="col-xs-1 align-middle text-center pl-1">
+                                        <span class='timestamp'>{{ edit.timestamp }}</span>
+                                    </div>
+                                    <div class='col-xl-11' style="white-space: pre-wrap;">{{ edit.content }}</div>
+                                </div>
+                            {% endfor %}
+                    {% endif %}
                 </div>
+
+                <div class="input-group text_input_div mt-4">
+                    <textarea name='addon' form='edit_note_form{{note.id}}' class="form-control type_note edit_note_input" onkeyup="textAreaAdjust(this)"></textarea>
+
+                </div>
+                <form method="POST" id="edit_note_form{{note.id}}" action="/logs/{{ log._id }}">
+                    <input type='hidden' name='note_id' value='{{ note.id }}'/>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary float-left" data-dismiss="modal">Close</button>
-                <button type='submit' name="update_btn" value="edit_note" form="edit_note_form" class='btn btn-success mt-2 float-right'>Update</button>
+                <button type='submit' name="update_btn" value="edit_note" form="edit_note_form{{note.id}}" class='btn btn-success mt-2 float-right'>Add Edit</button>
             </div>
         </div>
     </div>
