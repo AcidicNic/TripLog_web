@@ -40,15 +40,13 @@ def new_log():
     # r = requests.get('http://tripbot.tripsit.me/api/tripsit/getAllDrugAliases')
     # drug_list = r.json()['data'][0]
 
-    with open('static/drug_list.txt') as json_file:
-        drug_list = json.load(json_file)
-    util = {
-        'drug_list': list(drug_list)
-    }
+    # with open('static/drug_list.txt') as json_file:
+    #     drug_list = json.load(json_file)
+    # util = {
+    #     'drug_list': list(drug_list)
+    # }
     log={}
-    return render_template('begin_form.html', UTIL=util, log=log)
-
-
+    return render_template('begin_form.html', log=log)
 
 
 def get_drug_info(drug_name, dose, unit):
@@ -71,7 +69,6 @@ def get_drug_info(drug_name, dose, unit):
         'info': drug['properties'],
         'effects': []
     }
-    print(drug['properties'])
     effects = drug['formatted_effects']
     for effect in effects:
         if effect != '':
@@ -100,6 +97,7 @@ def new_log_submit():
         'desc': desc,
         'doses': [],
         'notes': [],
+        'status': 'CURRENTLY_TRIPPING'
     }
 
     drugs = request.form.getlist('drug')
@@ -108,66 +106,135 @@ def new_log_submit():
     for i in range(len(drugs)):
         if drugs[i] != '':
             log['doses'].append(get_drug_info(drugs[i], doses[i], units[i]))
-    if request.form.get('currently_tripping'):
-        log['status'] = 'CURRENTLY_TRIPPING'
+    # if request.form.get('currently_tripping'):
+    #     log['status'] = 'CURRENTLY_TRIPPING'
     log_id = logs.insert_one(log).inserted_id
     return redirect(url_for('log', log_id=log_id))
 
 
-@app.route('/logs/<log_id>', methods=['POST'])
-def add_note(log_id):
-    ''' add updated info to the database '''
+def update_desc(log_id):
     now = datetime.now()
-    note = request.form.get('note')
     log = logs.find_one({'_id': ObjectId(log_id)})
-    if 'file' in request.files:
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            print(filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            log['notes'].append({
-                'type': 'img',
-                'content': filename,
-                'timestamp': now.strftime('%-I:%M:%S %p')
-            })
-    if not note == '':
-        print(note[:3])
+    desc = request.form.get('desc')
+    title = request.form.get('title')
+    if desc == '':
+        desc = 'write a description!'
+    if title == '':
+        title = f"{log['username']}'s Experience"
+    if desc == log['desc'] and title == log['title']:
+        return redirect(url_for('log', log_id=log_id))
+    if title != log['title']:
         log['notes'].append({
-            'type': 'str',
-            'content': note,
+            'type': 'hidden',
+            'content': f"The title has been changed from \"{log['title']}\" to \"{title}\"",
             'timestamp': now.strftime('%-I:%M:%S %p')
         })
-        if note[:4] == '??? ':log['notes'].append({
-            'type': 'answer',
-            'content': AskTheCaterpillar.ask_the_caterpillar(note[4:]),
+    if desc != log['desc']:
+        log['notes'].append({
+            'type': 'hidden',
+            'content': f"The description has been changed from \"{log['desc']}\" to \"{desc}\"",
             'timestamp': now.strftime('%-I:%M:%S %p')
         })
+    log['title'] = title
+    log['desc'] = desc
     logs.update_one(
         {'_id': ObjectId(log_id)},
         {'$set': log}
     )
     return redirect(url_for('log', log_id=log_id))
 
-
 @app.route('/logs/<log_id>', methods=['POST'])
+def update(log_id):
+    ''' add updated info to the database '''
+    # Add Dose
+    if request.method == "POST" and request.form["update_btn"] == "add_dose":
+        return add_dose(log_id)
+    # Change Status
+    elif request.method == "POST" and request.form["update_btn"] == "status":
+        return change_status(log_id)
+    # Edit Title/Description
+    elif request.method == "POST" and request.form["update_btn"] == "edit_desc":
+        return update_desc(log_id)
+    # Add Note
+    else:
+        now = datetime.now()
+        note = request.form.get('note')
+        log = logs.find_one({'_id': ObjectId(log_id)})
+        if 'file' in request.files:
+            file = request.files['file']
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                print(filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                log['notes'].append({
+                    'type': 'img',
+                    'content': filename,
+                    'timestamp': now.strftime('%-I:%M:%S %p')
+                })
+        if not note == '':
+            print(note[:3])
+            log['notes'].append({
+                'type': 'str',
+                'content': note,
+                'timestamp': now.strftime('%-I:%M:%S %p')
+            })
+            if note[:4] == '??? ':log['notes'].append({
+                'type': 'answer',
+                'content': AskTheCaterpillar.ask_the_caterpillar(note[4:]),
+                'timestamp': now.strftime('%-I:%M:%S %p')
+            })
+        logs.update_one(
+            {'_id': ObjectId(log_id)},
+            {'$set': log}
+        )
+        return redirect(url_for('log', log_id=log_id))
+
+
 def change_status(log_id):
     ''' change the status of a log. '''
     now = datetime.now()
     log = logs.find_one({'_id': ObjectId(log_id)})
 
-    log['notes'].append({
-        'type': 'str',
-        'content': 'This log was marked completed.',
-        'timestamp': now.strftime('%-I:%M:%S %p')
-    })
-    log['status'] = 'COMPLETED'
+    if log['status'] != 'COMPLETED':
+        log['status'] = 'COMPLETED'
+        log['notes'].append({
+            'type': 'str',
+            'content': 'This log was marked completed.',
+            'timestamp': now.strftime('%-I:%M:%S %p')
+        })
+    else:
+        log['status'] = 'CURRENTLY_TRIPPING'
+        log['notes'].append({
+            'type': 'str',
+            'content': 'This log was reopened.',
+            'timestamp': now.strftime('%-I:%M:%S %p')
+        })
     logs.update_one(
         {'_id': ObjectId(log_id)},
         {'$set': log}
     )
     return redirect(url_for('log', log_id=log_id))
 
+
+def add_dose(log_id):
+    ''' updates the log and redirect to current_log '''
+    log = logs.find_one({'_id': ObjectId(log_id)})
+    now = datetime.now()
+    drug = request.form.get('drug')
+    dose = request.form.get('dose')
+    unit = request.form.get('unit')
+    if drug != '':
+        log['doses'].append(get_drug_info(drug, dose, unit))
+        log['notes'].append({
+            'type': 'str',
+            'content': f"Dose Added. {dose}{unit} of {drug}",
+            'timestamp': now.strftime('%-I:%M:%S %p')
+        })
+    logs.update_one(
+        {'_id': ObjectId(log_id)},
+        {'$set': log}
+    )
+    return redirect(url_for('log', log_id=log_id))
 
 @app.route('/logs/<log_id>')
 def log(log_id):
@@ -189,7 +256,7 @@ def edit_log(log_id):
     return render_template('log_edit_form.html', log=log)
 
 
-@app.route('/logs/<log_id>', methods=['POST'])
+@app.route('/logs/<log_id>/update', methods=['POST'])
 def update_log(log_id):
     ''' add updated info to the database and redirect to that log's page '''
     log = logs.find_one({'_id': ObjectId(log_id)})
@@ -199,7 +266,7 @@ def update_log(log_id):
     if desc == '':
         log['desc'] = 'write a description!'
     if title == '':
-        log['title'] = "testname's Experience"
+        log['title'] = f"{log['username']}'s Experience"
 
     log['doses'] = []
     drugs = request.form.getlist('drug')

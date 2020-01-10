@@ -1,5 +1,12 @@
 # TripLog Webapp
 
+## Pre-Intensive progress:
+Here's a video I took before the intensive.
+[![youtube link](https://i9.ytimg.com/vi/4QYFfNt-jMQ/mqdefault.jpg?time=1578631621626&sqp=CMyC4PAF&rs=AOn4CLBRE4Ch35A4sdfIZoSaLokBzSg3Rg)](https://www.youtube.com/watch?v=4QYFfNt-jMQ&feature=youtu.be "Joystick+LEDs")
+* There was no way to delete or edit a log. 
+* The create form didn't have as much functionality. 
+* The dropdown navbar didn't have any buttons, it didn't display all the information, and there were no popup modals.
+
 ### How do I try this out?
 This isn't fully usable, but many of the important features are ready. There is no way to make accounts yet so nothing is private, but have a [live demo availibile on heroku!](https://triplog-nic.herokuapp.com)
 

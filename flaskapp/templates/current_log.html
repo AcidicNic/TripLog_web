@@ -17,11 +17,11 @@
     <div class="collapse" id="navbarToggleExternalContent">
         <div class="bg-dark p-2">
             <div class="text-white text-center">
-                <button type="button" class="btn btn-dark m-2">{{ log.desc }}</button><br>
+                <button type="button" class="btn btn-secondary m-2" data-toggle="modal" data-target="#editDescModal">{{ log.desc }}</button><br>
                 <span>Doses:</span><br>
                 {% for dose in log.doses %}
                 <!-- TODO: IF option for space between dose and unit -->
-                <button type="button" class="btn btn-dark m-2" data-toggle="modal" data-target="#drugInfoModal{{dose.drug}}">{{ dose.dose }}{{ dose.unit }} of {{ dose.drug }}</button>
+                <button type="button" class="btn btn-secondary m-2" data-toggle="modal" data-target="#drugInfoModal{{dose.drug}}">{{ dose.dose }}{{ dose.unit }} of {{ dose.drug }}</button>
                 {% endfor %}
 
                 <br>
@@ -30,15 +30,21 @@
             <div class="d-flex justify-content-between btn-row text-white">
                 <button type="button" class="btn btn-primary m-2" onclick="location.href='/';">Home</button>
                 <button type="button" class="btn btn-danger m-2" data-toggle="modal" data-target="#helpModal">Need Help?</button>
-                <button type="button" class="btn btn-success m-2" onclick="">Add Dose</button>
+                <button type="button" class="btn btn-success m-2" data-toggle="modal" data-target="#addDoseModal">Add Dose</button>
                 <button type="button" class="btn btn-secondary m-2" onclick="location.href='/logs/{{ log._id }}/edit';">Edit</button>
-                <button type="button" class="btn btn-warning m-2" form='change_status' onClick='document.change_status.submit();'>Trip Completed</button>
+                {% if log.status == 'CURRENTLY_TRIPPING' %}
+                    <button type="submit" class="btn btn-warning m-2" name="update_btn" value="status" form='change_status'>Mark Completed</button>
+                {% else %}
+                    <button type="submit" class="btn btn-warning m-2" name="update_btn" value="status" form='change_status'>Reopen Log</button>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
 <!-- Modals -->
 {% include 'modals/help.html' %}
+{% include 'modals/add_dose.html' %}
+{% include 'modals/edit_desc.html' %}
 
 {% for dose in log.doses %}
     {% include 'modals/drug_info.html' %}
@@ -108,6 +114,7 @@
 
 <form method='POST' name='add_note' id='add_note' action='/logs/{{log._id}}' enctype='multipart/form-data'>
         <input type='hidden' name='_method' value='PUT'/>
+        <input type='hidden' name='update_btn' value='add_note'/>
 </form>
 
 <form method='POST' name='change_status' id='change_status' action='/logs/{{log._id}}'>
