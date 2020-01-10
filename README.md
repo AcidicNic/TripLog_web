@@ -1,7 +1,7 @@
 # TripLog Webapp
 
 ### How do I try this out?
-This isn't fully usable, but many of the important features are ready. There is no way to make accounts yet so nothing is private, but have a ![live demo availibile on heroku](https://triplog-nic.herokuapp.com)
+This isn't fully usable, but many of the important features are ready. There is no way to make accounts yet so nothing is private, but have a [live demo availibile on heroku!](https://triplog-nic.herokuapp.com)
 
 ### What can I do with this?
 * When making a new log, the drug textbox will suggest drug names. Using any of the suggested names means that TripLog can pull tons of information from the tripsit.me API and put it all into info cards. You can access the info cards by opening the drawer on the top left and clicking on the name of a drug.
@@ -13,7 +13,7 @@ This isn't fully usable, but many of the important features are ready. There is 
 * If you're not feeling too hot and you need someone to talk to, open up the drawer on the top left and click the red "Help" button. This will link you to the tripsit.me assistance RCS chat, it's full of nice people that will try their best to help you out.
 
 ### What features are coming next?
-Head over to ![the projects tab](https://github.com/snekek/TripLog_web/projects/1) in this repo to see my progress and upcoming features.
+Head over to [the projects tab](https://github.com/snekek/TripLog_web/projects/1) in this repo to see my progress and upcoming features.
 
 # Wireframes & Notes
 ![Notes](reference/notes.jpeg?raw=true "Notes")
