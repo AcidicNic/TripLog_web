@@ -6,11 +6,20 @@ import os
 import json
 import requests
 from werkzeug.utils import secure_filename
+import flask_dance
+from flask_dance.contrib.github import *
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+
+app.secret_key = "bec6053d51e5b5dd7fc73a4d0e4562687abb8171"
+blueprint = make_github_blueprint(
+    client_id="f14dd3963f54512958a8",
+    client_secret="bec6053d51e5b5dd7fc73a4d0e4562687abb8171",
+)
+app.register_blueprint(blueprint, url_prefix="/login")
 
 app.config['UPLOAD_FOLDER'] = 'static/photos'
 
@@ -22,14 +31,17 @@ logs = db.logs
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/')
 def home():
     ''' launch page '''
-    return render_template('home.html')
+    if not github.authorized:
+        return redirect(url_for("github.login"))
+    resp = github.get("/user")
+    assert resp.ok
+    return render_template('home.html', login=resp.json()["login"])
 
 
 
@@ -84,11 +96,11 @@ def new_log_submit():
     now = datetime.now()
     desc = request.form.get('desc')
     title = request.form.get('title')
-    username = request.form.get('username')
+    resp = github.get("/user")
+    username = resp.json()["login"]
+    assert resp.ok
     if desc == '':
         desc = 'write a description!'
-    if username == '':
-        username = 'username'
     if title == '':
         title = f"{username}'s Experience"
     log = {
@@ -306,7 +318,9 @@ def log(log_id):
 @app.route('/archive')
 def archive():
     ''' archive '''
-    return render_template('archive.html', logs=logs.find())
+    resp = github.get("/user")
+    username = resp.json()["login"]
+    return render_template('archive.html', logs=logs.find({'username': username}))
 
 
 @app.route('/logs/<log_id>/edit')
