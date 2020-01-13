@@ -7,18 +7,24 @@ import json
 import requests
 from werkzeug.utils import secure_filename
 import flask_dance
-from flask_dance.contrib.github import *
+from flask_dance.contrib.google import make_google_blueprint, google
+import secret
+# from flask_dance.contrib.github import *
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
 
-app.secret_key = "bec6053d51e5b5dd7fc73a4d0e4562687abb8171"
-blueprint = make_github_blueprint(
-    client_id="f14dd3963f54512958a8",
-    client_secret="bec6053d51e5b5dd7fc73a4d0e4562687abb8171",
+blueprint = make_google_blueprint(
+    client_id=secret.google_client_id,
+    client_secret=secret.google_client_secret,
+    scope=["profile", "email"]
 )
+# blueprint = make_github_blueprint(
+#     client_id=secret.github_client_id,
+#     client_secret=secret.github_client_secret,
+# )
 app.register_blueprint(blueprint, url_prefix="/login")
 
 app.config['UPLOAD_FOLDER'] = 'static/photos'
@@ -37,12 +43,12 @@ def allowed_file(filename):
 @app.route('/')
 def home():
     ''' launch page '''
-    if not github.authorized:
-        return redirect(url_for("github.login"))
-    resp = github.get("/user")
-    assert resp.ok
-    return render_template('home.html', login=resp.json()["login"])
-
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/plus/v1/people/me")
+    print(resp)
+    assert resp.ok, resp.text
+    return render_template('home.html', email=resp.json()["emails"][0]["value"])
 
 
 @app.route('/begin')
@@ -87,7 +93,6 @@ def get_drug_info(drug_name, dose, unit):
     if drug_name != drug['pretty_name']:
         drug_dict['pretty_name'] = drug['pretty_name']
     return drug_dict
-
 
 
 @app.route('/create', methods=['POST'])
@@ -368,6 +373,7 @@ def ask_the_caterpillar(query):
         data = r.json()
         return data["data"]["messages"][0]["content"]
     return f"So sorry! Ask The Caterpillar is currently down, try again later. (Error {r.status_code}: {r.reason})"
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=os.environ.get('PORT', 666))
