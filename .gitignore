@@ -3,3 +3,4 @@
 /flaskapp/__pycache__
 /flaskapp/.gitignore
 .idea
+env
